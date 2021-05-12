@@ -1,0 +1,15 @@
+{
+    "name": "icecube/clean-spam",
+    "license": "MIT",
+    "type": "magento-module",
+    "description": "Clean Spam via shell in OpenMage / Magento 1",
+    "homepage": "https://github.com/icecubenz-open-mage/Icecube_CleanSpam",
+    "authors": [
+        {
+            "name": "Icecube"
+        }
+    ],
+    "require": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+  }
