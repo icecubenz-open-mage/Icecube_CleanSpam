@@ -11,8 +11,11 @@ class Icecube_Shell_CleanSpam extends Mage_Shell_Abstract
      */
     public function run()
     {
-        $this->_cleanSpamCustomers((bool) $this->getArg('noDryRun'));
-        // $this->_cleanSpamSubscribers((bool) $this->getArg('noDryRun'));
+        if ($this->getArg('customers')) {
+            $this->_cleanSpamCustomers();
+        } elseif ($this->getArg('subscribers')) {
+            $this->_cleanSpamSubscribers();
+        }
 
         // if nothing called, just do the help
         echo $this->usageHelp();
@@ -20,7 +23,7 @@ class Icecube_Shell_CleanSpam extends Mage_Shell_Abstract
         return $this;
     }
 
-    protected function _cleanSpamCustomers($noDryRun = false)
+    protected function _cleanSpamCustomers()
     {
         $deletedCustomers = 0;
 
@@ -58,7 +61,7 @@ class Icecube_Shell_CleanSpam extends Mage_Shell_Abstract
             }
 
             try {
-                if ($noDryRun) {
+                if ((bool) $this->getArg('no-dry-run')) {
                     echo "DELETING: ({$customer->getId()}) {$customer->getEmail()}: {$customer->getFirstname()} {$customer->getLastname()}\r\n";
                     Mage::log("DELETING: ({$customer->getId()}) {$customer->getEmail()}: {$customer->getFirstname()} {$customer->getLastname()}", null, 'clean-spam.log');
                     Mage::getModel('customer/customer')->load($customer->getId())->delete();
@@ -77,7 +80,7 @@ class Icecube_Shell_CleanSpam extends Mage_Shell_Abstract
         return $this;
     }
 
-    protected function _cleanSpamSubscribers($noDryRun = false)
+    protected function _cleanSpamSubscribers()
     {
         // Mage_Newsletter_Model_Subscriber::STATUS_SUBSCRIBED   = 1;
         // Mage_Newsletter_Model_Subscriber::STATUS_NOT_ACTIVE   = 2;
@@ -93,7 +96,7 @@ class Icecube_Shell_CleanSpam extends Mage_Shell_Abstract
 
         foreach ($newsletterSubscribers as $subscriber) {
             try {
-                if ($noDryRun) {
+                if ((bool) $this->getArg('no-dry-run')) {
                     echo "DELETING: ({$subscriber->getId()}) {$subscriber->getEmail()}\r\n";
                     Mage::log("DELETING: ({$subscriber->getId()}) {$subscriber->getEmail()}", null, 'clean-spam.log');
                     $subscriber->delete();
@@ -122,8 +125,10 @@ class Icecube_Shell_CleanSpam extends Mage_Shell_Abstract
         return <<<USAGE
 Usage:  php -f clean_spam.php -- [options]
 
-  --no-dry-run                      Actually clean up the spam
-  help                              This help
+  customers          Work on Customers
+  subscribers       Work on Subscribers
+  --no-dry-run      Actually clean up the spam
+  help              This help
 
 USAGE;
     }
